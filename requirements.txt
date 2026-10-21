@@ -1,0 +1,8 @@
+Django>=5.2,<5.3
+gunicorn>=23.0
+whitenoise>=6.9
+dj-database-url>=2.3
+psycopg[binary]>=3.2
+Pillow>=11.0
+python-dotenv>=1.0
+django-jazzmin

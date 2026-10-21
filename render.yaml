@@ -1,0 +1,21 @@
+services:
+  - type: web
+    name: medikhoj
+    runtime: python
+    buildCommand: pip install -r requirements.txt && python manage.py collectstatic --noinput && python manage.py migrate --noinput
+    startCommand: gunicorn config.wsgi:application
+    healthCheckPath: /health/
+    envVars:
+      - key: DJANGO_SECRET_KEY
+        generateValue: true
+      - key: DJANGO_DEBUG
+        value: "False"
+      - key: DJANGO_ALLOWED_HOSTS
+        value: medikhoj.onrender.com
+      - key: DATABASE_URL
+        fromDatabase:
+          name: medikhoj-db
+          property: connectionString
+databases:
+  - name: medikhoj-db
+    plan: free
