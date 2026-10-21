@@ -1,0 +1,86 @@
+{% extends "base.html" %}
+{% block title %}MedMitra — Find medicines and compare local pharmacies{% endblock %}
+{% block meta_description %}{{ homepage_meta_description|default:"MedMitra helps you discover medicines, compare listed prices and find participating pharmacies near you." }}{% endblock %}
+{% block content %}
+<section class="mk-hero">
+ <div class="container"><div class="row align-items-center g-4 g-xl-5">
+  <div class="col-lg-7">
+   <div class="mk-eyebrow"><span class="eyebrow-dot"></span> LOCAL PHARMACIES. CLEARER CHOICES.</div>
+   <h1>Find your medicine.<br><span class="mk-gradient-text">Compare nearby.</span></h1>
+   <p class="mk-hero-copy">Search participating pharmacies, compare listed prices and check availability before you make the trip.</p>
+   <form class="mk-search-box" method="get" action="{% url 'medicine_search' %}" role="search">
+    <label class="visually-hidden" for="heroMedicineSearch">Medicine, brand or generic name</label><i class="bi bi-search" aria-hidden="true"></i><input id="heroMedicineSearch" type="search" name="q" placeholder="Search medicine, brand or generic name…" autocomplete="off"><button type="submit" class="btn btn-primary rounded-pill px-4">Search <i class="bi bi-arrow-right ms-1"></i></button>
+   </form>
+   <div class="mk-search-help"><span><i class="bi bi-shield-check"></i> Verified store listings</span><span><i class="bi bi-tag"></i> Price comparison</span><span><i class="bi bi-geo-alt"></i> PIN code search</span></div>
+   <div class="mk-hero-links"><a href="{% url 'prescription_upload' %}" class="mk-prescription-link"><i class="bi bi-file-earmark-medical"></i> Upload prescription <i class="bi bi-arrow-up-right"></i></a><a href="{% url 'pharmacy_finder' %}"><i class="bi bi-geo-alt-fill"></i> Explore pharmacies near you <i class="bi bi-arrow-up-right"></i></a><a href="{% url 'retailer_register' %}">Own a pharmacy? Join MedMitra <i class="bi bi-arrow-right"></i></a></div>
+  </div>
+  <div class="col-lg-5"><div class="mk-hero-visual" aria-label="Illustration of a medicine discovery dashboard">
+   <div class="hero-glow"></div><div class="hero-pill pill-a"><i class="bi bi-capsule-pill"></i></div><div class="hero-pill pill-b"><i class="bi bi-heart-pulse"></i></div>
+   <div class="hero-product-card"><div class="product-card-top"><span class="mini-label"><i class="bi bi-check-circle-fill"></i> LOCAL AVAILABILITY</span><span class="mini-dots"><i></i><i></i><i></i></span></div><div class="fake-search"><i class="bi bi-search"></i><span>Paracetamol 500 mg</span><i class="bi bi-sliders ms-auto"></i></div><div class="fake-pharmacy-row"><div class="fake-store-icon"><i class="bi bi-shop"></i></div><div class="fake-store-text"><strong>GreenLeaf Pharmacy</strong><small><i class="bi bi-geo-alt"></i> Local participating store</small></div><div class="fake-price"><strong>₹24</strong><small>Example price</small></div></div><div class="fake-pharmacy-row"><div class="fake-store-icon blue"><i class="bi bi-shop"></i></div><div class="fake-store-text"><strong>CarePoint Chemist</strong><small><i class="bi bi-clock"></i> Availability recently updated</small></div><div class="fake-price"><strong>₹28</strong><small>Example price</small></div></div><div class="fake-note"><i class="bi bi-info-circle-fill"></i> Illustration only — prices and store names above are examples.</div></div>
+   <div class="floating-bubble bubble-check"><span><i class="bi bi-shield-check"></i></span><div><strong>Verified stores</strong><small>Approval-first listings</small></div></div><div class="floating-bubble bubble-price"><span><i class="bi bi-graph-down-arrow"></i></span><div><strong>Compare clearly</strong><small>Clear availability status</small></div></div>
+  </div></div>
+ </div></div>
+</section>
+<section class="mk-trust-strip"><div class="container"><div class="row g-3"><div class="col-6 col-lg-3"><div class="trust-item"><span class="trust-icon teal"><i class="bi bi-search-heart"></i></span><div><strong>Easy discovery</strong><small>Find matching products</small></div></div></div><div class="col-6 col-lg-3"><div class="trust-item"><span class="trust-icon blue"><i class="bi bi-tags"></i></span><div><strong>Compare prices</strong><small>View listed MRP and price</small></div></div></div><div class="col-6 col-lg-3"><div class="trust-item"><span class="trust-icon violet"><i class="bi bi-shop-window"></i></span><div><strong>Local pharmacies</strong><small>Browse participating stores</small></div></div></div><div class="col-6 col-lg-3"><div class="trust-item"><span class="trust-icon amber"><i class="bi bi-file-earmark-medical"></i></span><div><strong>Prescription aware</strong><small>Private upload workflow</small></div></div></div></div></div></section>
+{% if homepage_promotions %}
+<section class="hp-promotion-section" aria-labelledby="hpPromotionsTitle">
+ <div class="container">
+  <div class="hp-section-heading"><div><span class="hp-kicker">ADMIN-CURATED OFFERS</span><h2 id="hpPromotionsTitle">Offers and updates</h2><p>Promotions published by the MedMitra administrator.</p></div><div class="hp-carousel-controls"><button type="button" class="hp-carousel-button" data-scroll-rail="hpPromotionRail" data-direction="left" aria-label="Scroll promotions left"><i class="bi bi-chevron-left"></i></button><button type="button" class="hp-carousel-button" data-scroll-rail="hpPromotionRail" data-direction="right" aria-label="Scroll promotions right"><i class="bi bi-chevron-right"></i></button></div></div>
+  <div class="hp-promotion-rail" id="hpPromotionRail" tabindex="0" aria-label="Scrollable promotions">
+   {% for promotion in homepage_promotions %}
+    <article class="hp-promotion-card">
+     {% if promotion.target_url %}<a href="{{ promotion.target_url }}" class="hp-promotion-card-link" aria-label="{{ promotion.title }}">{% endif %}
+      <img src="{{ promotion.image.url }}" alt="{{ promotion.alt_text }}" loading="lazy">
+      <div class="hp-promotion-copy"><h3>{{ promotion.title }}</h3>{% if promotion.subtitle %}<p>{{ promotion.subtitle }}</p>{% endif %}{% if promotion.button_label %}<span class="hp-promotion-cta">{{ promotion.button_label }} <i class="bi bi-arrow-up-right"></i></span>{% endif %}</div>
+     {% if promotion.target_url %}</a>{% endif %}
+    </article>
+   {% endfor %}
+  </div>
+ </div>
+</section>
+{% endif %}
+{% if homepage_metrics %}
+<section class="hp-trust-section" aria-labelledby="hpTrustTitle"><div class="container"><div class="hp-section-heading"><div><span class="hp-kicker">THE MEDMITRA DIFFERENCE</span><h2 id="hpTrustTitle">Why choose us?</h2></div></div><div class="hp-metric-grid">
+ {% for metric in homepage_metrics %}<article class="hp-metric-card"><span class="hp-metric-icon"><i class="bi {{ metric.icon }}" aria-hidden="true"></i></span><div><strong>{{ metric.value }}</strong><h3>{{ metric.label }}</h3>{% if metric.detail %}<p>{{ metric.detail }}</p>{% endif %}</div></article>{% endfor %}
+ </div></div></section>
+{% endif %}
+<section class="mk-section"><div class="container"><div class="mk-section-heading"><div><div class="mk-section-kicker">BROWSE BY NEED</div><h2>Explore <span class="mk-gradient-text">categories</span></h2><p>Start with a category, then compare the listings available from participating pharmacies.</p></div><a class="mk-text-link" href="{% url 'medicine_search' %}">View all medicines <i class="bi bi-arrow-up-right"></i></a></div>
+ <div class="row g-3 g-lg-4">{% for category in categories %}<div class="col-6 col-md-4 col-xl-3"><a href="{% url 'medicine_search' %}?category={{ category.slug }}" class="mk-category-card"><span class="category-icon"><i class="bi {{ category.icon }}"></i></span><span class="category-name">{{ category.name }}</span><small>{{ category.description|default:"Explore available listings"|truncatewords:7 }}</small><i class="bi bi-arrow-up-right category-arrow"></i></a></div>{% empty %}<div class="col-12"><div class="mk-empty-state"><i class="bi bi-grid"></i><h3>Categories are being set up</h3><p>Medicine categories will appear here as verified local pharmacy listings are added.</p></div></div>{% endfor %}</div>
+</div></section>
+<section class="mk-section mk-section-muted"><div class="container"><div class="mk-section-heading"><div><div class="mk-section-kicker">RECENT LISTINGS</div><h2>Available around <span class="mk-gradient-text">your community</span></h2><p>Availability and prices are supplied by each pharmacy and can change. Confirm with the store before visiting.</p></div><a href="{% url 'pharmacy_finder' %}" class="mk-text-link">Find a pharmacy <i class="bi bi-arrow-up-right"></i></a></div>
+<div class="row g-3 g-xl-4">{% for listing in featured %}<div class="col-12 col-sm-6 col-xl-3"><article class="mk-product-card"><div class="product-visual"><span class="product-visual-icon"><i class="bi bi-capsule-pill"></i></span>{% if listing.discount_percent %}<span class="discount-tag">{{ listing.discount_percent }}% OFF</span>{% endif %}<span class="product-kind">{{ listing.product.get_dosage_form_display }}</span></div><div class="product-card-body"><div class="product-brand">{{ listing.product.manufacturer|default:"Listed medicine" }}</div><h3><a href="{% url 'medicine_detail' listing.product_id %}">{{ listing.product.brand_name }}{% if listing.product.strength %} {{ listing.product.strength }}{% endif %}</a></h3><p class="product-generic">{{ listing.product.generic_name|default:listing.product.pack_size|default:"Product details provided by pharmacy" }}</p><div class="product-price-row"><div><strong>₹{{ listing.selling_price|floatformat:2 }}</strong>{% if listing.mrp > listing.selling_price %}<del>₹{{ listing.mrp|floatformat:2 }}</del>{% endif %}</div><span class="stock-pill {% if listing.inventory_is_fresh and listing.in_stock %}stock-ok{% else %}stock-low{% endif %}"><i class="bi bi-check-circle-fill"></i>{% if listing.inventory_is_fresh and listing.in_stock %}Reported available{% else %}Confirm availability{% endif %}</span></div><a href="{% url 'medicine_detail' listing.product_id %}" class="product-pharmacy-link"><i class="bi bi-shop"></i><span>{{ listing.pharmacy.name }}</span><i class="bi bi-arrow-right ms-auto"></i></a><div class="stock-update"><i class="bi bi-clock-history"></i> Updated {{ listing.last_stock_update|timesince }} ago {% if not listing.inventory_is_fresh %}<span class="stale-warning">· Reconfirm</span>{% endif %}</div></div></article></div>{% empty %}<div class="col-12"><div class="mk-empty-state"><span class="empty-art"><i class="bi bi-capsule"></i></span><h3>Local listings will appear here</h3><p>Products appear after a pharmacy is verified and publishes its medicine listings.</p><a class="btn btn-primary rounded-pill px-4" href="{% url 'pharmacy_finder' %}">Explore pharmacies</a></div></div>{% endfor %}</div>
+</div></section>
+<section class="mk-how-section"><div class="container"><div class="mk-section-heading centered"><div><div class="mk-section-kicker">HOW MEDMITRA WORKS</div><h2>A clearer path to <span class="mk-gradient-text">your medicine</span></h2><p>One shared marketplace for discovery, verification and order requests.</p></div></div><div class="row g-3 g-lg-4"><div class="col-md-4"><div class="mk-step-card"><span class="step-index">01</span><span class="step-icon"><i class="bi bi-search"></i></span><h3>Search and compare</h3><p>Search by brand, generic name or strength, then compare participating pharmacies and listed prices.</p></div></div><div class="col-md-4"><div class="mk-step-card"><span class="step-index">02</span><span class="step-icon"><i class="bi bi-shop"></i></span><h3>Choose a store</h3><p>Check the store's address, listed availability status and whether delivery or pickup is offered.</p></div></div><div class="col-md-4"><div class="mk-step-card"><span class="step-index">03</span><span class="step-icon"><i class="bi bi-bag-check"></i></span><h3>Send an order request</h3><p>The pharmacy confirms availability and reviews any required prescription before fulfilling the order.</p></div></div></div></div></section>
+{% if top_healthcare_terms or top_medicine_terms or top_searched_terms or top_vaccine_terms %}
+<section class="hp-popular-section"><div class="container"><div class="hp-section-heading"><div><span class="hp-kicker">POPULAR SEARCHES</span><h2>Explore frequently requested items</h2><p>Search terms curated by the administrator. Availability depends on current pharmacy listings.</p></div></div>
+ {% if top_healthcare_terms %}<div class="hp-keyword-group"><h3>Top-selling healthcare products</h3><div class="hp-keyword-list">{% for item in top_healthcare_terms %}<a href="{% if item.target_url %}{{ item.target_url }}{% else %}{% url 'medicine_search' %}?q={{ item.term|urlencode }}{% endif %}">{{ item.term }}</a>{% endfor %}</div></div>{% endif %}
+ {% if top_medicine_terms %}<div class="hp-keyword-group"><h3>Top-selling medicines</h3><div class="hp-keyword-list">{% for item in top_medicine_terms %}<a href="{% if item.target_url %}{{ item.target_url }}{% else %}{% url 'medicine_search' %}?q={{ item.term|urlencode }}{% endif %}">{{ item.term }}</a>{% endfor %}</div></div>{% endif %}
+ {% if top_searched_terms %}<div class="hp-keyword-group"><h3>Top-searched medicines</h3><div class="hp-keyword-list">{% for item in top_searched_terms %}<a href="{% if item.target_url %}{{ item.target_url }}{% else %}{% url 'medicine_search' %}?q={{ item.term|urlencode }}{% endif %}">{{ item.term }}</a>{% endfor %}</div></div>{% endif %}
+ {% if top_vaccine_terms %}<div class="hp-keyword-group"><h3>Top-searched vaccines</h3><div class="hp-keyword-list">{% for item in top_vaccine_terms %}<a href="{% if item.target_url %}{{ item.target_url }}{% else %}{% url 'medicine_search' %}?q={{ item.term|urlencode }}{% endif %}">{{ item.term }}</a>{% endfor %}</div></div>{% endif %}
+</div></section>
+{% endif %}
+{% if homepage_testimonials %}
+<section class="hp-reviews-section" aria-labelledby="hpReviewsTitle"><div class="container"><div class="hp-section-heading"><div><span class="hp-kicker">CUSTOMER VOICES</span><h2 id="hpReviewsTitle">What customers say</h2><p>Reviews published by the MedMitra administrator.</p></div><div class="hp-carousel-controls"><button type="button" class="hp-carousel-button" data-scroll-rail="hpReviewRail" data-direction="left" aria-label="Scroll reviews left"><i class="bi bi-chevron-left"></i></button><button type="button" class="hp-carousel-button" data-scroll-rail="hpReviewRail" data-direction="right" aria-label="Scroll reviews right"><i class="bi bi-chevron-right"></i></button></div></div>
+ <div class="hp-review-rail" id="hpReviewRail" tabindex="0" aria-label="Scrollable customer reviews">{% for review in homepage_testimonials %}<article class="hp-review-card"><div class="hp-review-stars" aria-label="{{ review.rating }} out of 5 stars">{% for star in "12345" %}{% if forloop.counter <= review.rating %}<i class="bi bi-star-fill"></i>{% else %}<i class="bi bi-star"></i>{% endif %}{% endfor %}</div><blockquote>“{{ review.quote }}”</blockquote><div class="hp-review-author"><strong>{{ review.customer_name }}</strong>{% if review.location_label %}<span>{{ review.location_label }}</span>{% endif %}{% if review.review_date %}<time datetime="{{ review.review_date|date:'Y-m-d' }}">{{ review.review_date|date:'M j, Y' }}</time>{% endif %}</div></article>{% endfor %}</div>
+</div></section>
+{% endif %}
+{% if homepage_editorial_sections %}
+<section class="hp-editorial-section"><div class="container"><div class="hp-editorial-grid">{% for section in homepage_editorial_sections %}<article class="hp-editorial-card">{% if section.eyebrow %}<span class="hp-kicker">{{ section.eyebrow }}</span>{% endif %}<h2>{{ section.title }}</h2><div class="hp-editorial-body">{{ section.body|linebreaksbr }}</div>{% if section.button_label and section.button_url %}<a class="hp-editorial-link" href="{{ section.button_url }}">{{ section.button_label }} <i class="bi bi-arrow-up-right"></i></a>{% endif %}</article>{% endfor %}</div></div></section>
+{% endif %}
+<section class="mk-bottom-cta"><div class="container"><div class="mk-cta-inner"><div><div class="mk-section-kicker text-white-50">FOR LOCAL PHARMACIES</div><h2>Bring your pharmacy into the local search.</h2><p>Register your store, submit licence details and manage the listings after approval.</p></div><a class="btn btn-light rounded-pill px-4 py-3" href="{% url 'retailer_register' %}">Register your pharmacy <i class="bi bi-arrow-up-right ms-2"></i></a></div></div></section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+(() => {
+  document.querySelectorAll('[data-scroll-rail]').forEach((button) => {
+    button.addEventListener('click', () => {
+      const rail = document.getElementById(button.dataset.scrollRail);
+      if (!rail) return;
+      const direction = button.dataset.direction === 'left' ? -1 : 1;
+      rail.scrollBy({ left: direction * Math.max(280, rail.clientWidth * 0.8), behavior: 'smooth' });
+    });
+  });
+})();
+</script>
+{% endblock %}

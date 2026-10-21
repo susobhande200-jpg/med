@@ -1,0 +1,102 @@
+{% load static %}
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#f4fbf8">
+  <meta name="description" content="{% block meta_description %}MedMitra helps you discover medicines, compare listed prices and find verified pharmacies near you.{% endblock %}">
+  <title>{% block title %}MedMitra — Find medicines near you{% endblock %}</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+  <link href="{% static 'css/app.css' %}" rel="stylesheet">
+  <link href="{% static 'css/ui-refresh.css' %}" rel="stylesheet">
+  {% block extra_head %}{% endblock %}
+</head>
+<body>
+<a class="skip-link" href="#main-content">Skip to content</a>
+<nav class="navbar navbar-expand-lg site-nav sticky-top" aria-label="Main navigation">
+ <div class="container">
+  <a class="navbar-brand brand" href="{% url 'home' %}" aria-label="MedMitra home"><span class="brand-mark"><i class="bi bi-capsule-pill"></i></span><span>Med<span class="brand-accent">Mitra</span></span></a>
+  <div class="nav-quick d-flex align-items-center gap-2 ms-auto order-lg-2">
+   {% if user.is_authenticated %}
+    <a href="{% url 'cart_detail' %}" class="cart-nav" aria-label="Cart with {{ marketplace_cart_count }} items"><i class="bi bi-bag"></i><span class="cart-count">{{ marketplace_cart_count }}</span></a>
+   {% endif %}
+   <button class="theme-toggle" type="button" id="themeToggle" aria-label="Switch to dark mode" title="Switch theme"><i class="bi bi-moon-stars-fill" id="themeIcon" aria-hidden="true"></i><span class="theme-toggle-label d-none d-sm-inline">Dark mode</span></button>
+   <button class="navbar-toggler ms-1" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav" aria-controls="mainNav" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
+  </div>
+  <div class="collapse navbar-collapse order-lg-1" id="mainNav">
+   <ul class="navbar-nav ms-lg-4 me-auto align-items-lg-center gap-lg-1">
+    <li class="nav-item"><a class="nav-link" href="{% url 'medicine_search' %}"><i class="bi bi-capsule me-1"></i>Medicines</a></li>
+    <li class="nav-item"><a class="nav-link" href="{% url 'pharmacy_finder' %}"><i class="bi bi-geo-alt me-1"></i>Find pharmacy</a></li>
+    {% if user.is_authenticated %}
+      <li class="nav-item"><a class="nav-link" href="{% url 'customer_dashboard' %}"><i class="bi bi-receipt me-1"></i>My orders</a></li>
+      {% if has_owned_pharmacy or user.is_staff or user.is_superuser %}<li class="nav-item"><a class="nav-link" href="{% url 'retailer_dashboard' %}"><i class="bi bi-shop me-1"></i>Store orders</a></li>{% endif %}
+      {% if has_pharmacy_staff or user.is_staff or user.is_superuser %}<li class="nav-item"><a class="nav-link" href="{% url 'pharmacy_dashboard' %}"><i class="bi bi-box-seam me-1"></i>Inventory</a></li>{% endif %}
+      {% if user.is_staff or user.is_superuser %}<li class="nav-item"><a class="nav-link" href="{% url 'marketplace_admin_dashboard' %}"><i class="bi bi-shield-check me-1"></i>Admin</a></li>{% endif %}
+      <li class="nav-item nav-mobile-account d-lg-none"><a class="nav-link" href="{% url 'profile_overview' %}"><i class="bi bi-person-circle me-1"></i>My profile</a></li>
+      <li class="nav-item nav-mobile-account d-lg-none"><a class="nav-link" href="{% url 'prescriptions' %}"><i class="bi bi-file-earmark-medical me-1"></i>My prescriptions</a></li>
+      <li class="nav-item nav-mobile-account d-lg-none"><a class="nav-link" href="{% url 'retailer_register' %}"><i class="bi bi-shop-window me-1"></i>Register a pharmacy</a></li>
+    {% else %}
+      <li class="nav-item"><a class="nav-link" href="{% url 'retailer_register' %}"><i class="bi bi-shop-window me-1"></i>Sell with us</a></li>
+    {% endif %}
+   </ul>
+   <div class="nav-account d-flex flex-column flex-lg-row align-items-stretch align-items-lg-center gap-2 mt-3 mt-lg-0">
+    {% if user.is_authenticated %}
+      <a class="btn btn-light-outline rounded-pill px-3" href="{% url 'profile_overview' %}"><i class="bi bi-person-circle me-1"></i>My profile</a>
+      <a class="btn btn-light-outline rounded-pill px-3" href="{% url 'prescriptions' %}"><i class="bi bi-file-medical me-1"></i>Prescriptions</a>
+      <form method="post" action="{% url 'logout' %}" class="d-grid d-lg-block">{% csrf_token %}<button class="btn btn-primary rounded-pill px-4" type="submit">Sign out</button></form>
+    {% else %}
+      <a class="btn btn-light-outline rounded-pill px-3" href="{% url 'login' %}">Sign in</a>
+      <a class="btn btn-primary rounded-pill px-4" href="{% url 'register' %}">Create account <i class="bi bi-arrow-up-right ms-1"></i></a>
+    {% endif %}
+   </div>
+  </div>
+ </div>
+</nav>
+<main id="main-content">
+ {% if messages %}<div class="container pt-3">{% for message in messages %}<div class="alert alert-{{ message.tags|default:'info' }} alert-dismissible fade show" role="status">{{ message }}<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button></div>{% endfor %}</div>{% endif %}
+ {% block content %}{% endblock %}
+</main>
+<footer class="mk-footer">
+ <div class="container"><div class="footer-top row gy-4 align-items-start">
+  <div class="col-lg-5"><a class="brand footer-brand" href="{% url 'home' %}"><span class="brand-mark"><i class="bi bi-capsule-pill"></i></span><span>Med<span class="brand-accent">Mitra</span></span></a><p class="footer-copy mt-3">A simpler way to discover medicines, compare participating pharmacies and check local availability.</p></div>
+  <div class="col-6 col-lg-2"><h2 class="footer-title">Explore</h2><a href="{% url 'medicine_search' %}">Find medicines</a><a href="{% url 'pharmacy_finder' %}">Find pharmacy</a><a href="{% url 'retailer_register' %}">For retailers</a><a href="{% url 'about' %}">About</a></div>
+  <div class="col-6 col-lg-2"><h2 class="footer-title">Your account</h2><a href="{% url 'customer_dashboard' %}">My orders</a><a href="{% url 'prescriptions' %}">Prescriptions</a><a href="{% url 'privacy' %}">Privacy</a><a href="{% url 'terms' %}">Terms</a><a href="{% url 'contact' %}">Contact</a><a href="{% url 'login' %}">Sign in</a></div>
+  <div class="col-lg-3"><div class="footer-note"><i class="bi bi-shield-check"></i><div><strong>Trust starts with transparency</strong><p>Pharmacy listings stay hidden until reviewed. Stock can change; confirm availability with the pharmacy.</p></div></div></div>
+ </div>
+ {% if footer_social_links %}
+ <section class="footer-social-banner" aria-labelledby="footer-social-title">
+  <div class="footer-social-copy">
+   <span class="footer-social-eyebrow"><i class="bi bi-heart-pulse-fill" aria-hidden="true"></i> STAY CONNECTED</span>
+   <h2 id="footer-social-title">Follow MedMitra</h2>
+   <p>Updates, offers and pharmacy news from our community.</p>
+  </div>
+  <nav class="footer-social-links" aria-label="MedMitra social media links">
+   {% for social in footer_social_links %}
+    <a class="footer-social-link" href="{{ social.url }}" aria-label="MedMitra on {{ social.display_label }}" title="{{ social.display_label }}" {% if social.open_in_new_tab %}target="_blank" rel="noopener noreferrer"{% endif %}>
+     <i class="{{ social.icon_class }}" aria-hidden="true"></i><span>{{ social.display_label }}</span>
+    </a>
+   {% endfor %}
+  </nav>
+ </section>
+ {% endif %}
+ <div class="footer-bottom"><span>© {% now "Y" %} MedMitra</span><span>Built for discovery, verification and safer pharmacy workflows.</span></div></div>
+</footer>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+(()=>{
+ const root=document.documentElement, toggle=document.getElementById('themeToggle'), icon=document.getElementById('themeIcon');
+ let stored=null; try{stored=(localStorage.getItem('medisearch-theme')||localStorage.getItem('medikhoj-theme'))}catch(e){}
+ const preferred=window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light';
+ function applyTheme(theme){root.setAttribute('data-theme',theme);root.style.colorScheme=theme;if(icon)icon.className=theme==='dark'?'bi bi-sun-fill':'bi bi-moon-stars-fill';if(toggle){const label=toggle.querySelector('.theme-toggle-label');toggle.setAttribute('aria-label',theme==='dark'?'Switch to light mode':'Switch to dark mode');toggle.title=theme==='dark'?'Switch to light mode':'Switch to dark mode';if(label)label.textContent=theme==='dark'?'Light mode':'Dark mode';}}
+ applyTheme(stored==='dark'||stored==='light'?stored:preferred);
+ if(toggle)toggle.addEventListener('click',()=>{const next=root.getAttribute('data-theme')==='dark'?'light':'dark';applyTheme(next);try{localStorage.setItem('medisearch-theme',next)}catch(e){}});
+ document.querySelectorAll('[data-confirm]').forEach(el=>el.addEventListener('click',e=>{if(!confirm(el.dataset.confirm))e.preventDefault()}));
+})();
+</script>
+{% block extra_js %}{% endblock %}
+</body></html>

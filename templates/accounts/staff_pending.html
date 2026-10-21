@@ -1,0 +1,5 @@
+{% extends "base.html" %}
+{% block title %}Pharmacy staff approval | MedMitra{% endblock %}
+{% block content %}
+<section class="section-pad"><div class="container"><div class="auth-card text-center"><div class="auth-icon"><i class="bi bi-shield-lock"></i></div><h1>Pharmacy access pending</h1><p class="auth-subtitle">Your {{ profile.get_role_display|lower }} account must be approved by the store administrator before inventory and sales tools are available.</p><a class="btn btn-primary rounded-pill" href="{% url 'home' %}">Return to medicine catalogue</a></div></div></section>
+{% endblock %}

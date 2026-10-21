@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block title %}Inventory Management | MedMitra{% endblock %}
+{% block content %}
+<section class="admin-shell"><div class="container py-5">
+  <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4"><div><div class="eyebrow">STORE OPERATIONS</div><h1>Medicine <span class="text-gradient">inventory</span></h1><p class="text-secondary mb-0">Automatic stock deduction, batch/expiry checks, reorder suggestions and sales history.</p></div><div class="d-flex gap-2 flex-wrap"><a class="btn btn-outline-primary rounded-pill" href="{% url 'pharmacy_medicines' %}">All medicines</a><a class="btn btn-outline-secondary rounded-pill" href="{% url 'pharmacy_stock' %}">Stock history</a><a class="btn btn-primary rounded-pill" href="{% url 'pharmacy_medicine_add' %}">+ Add medicine</a><a class="btn btn-success rounded-pill" href="{% url 'pharmacy_sale' %}">+ Record sale</a></div></div>
+  <div class="row g-3 mb-4">
+    <div class="col-6 col-xl-3"><div class="metric-card"><span class="metric-icon"><i class="bi bi-capsule"></i></span><div class="metric-label">Active medicines</div><div class="metric-value">{{ medicine_count }}</div></div></div>
+    <div class="col-6 col-xl-3"><div class="metric-card"><span class="metric-icon"><i class="bi bi-currency-rupee"></i></span><div class="metric-label">Sales today</div><div class="metric-value">₹{{ today_sales|floatformat:2 }}</div></div></div>
+    <div class="col-6 col-xl-3"><div class="metric-card"><span class="metric-icon"><i class="bi bi-exclamation-triangle"></i></span><div class="metric-label">Need restock</div><div class="metric-value">{{ low_stock|length }}</div></div></div>
+    <div class="col-6 col-xl-3"><div class="metric-card"><span class="metric-icon"><i class="bi bi-box-seam"></i></span><div class="metric-label">Out of stock</div><div class="metric-value">{{ out_of_stock_count }}</div></div></div>
+  </div>
+  <div class="row g-4">
+    <div class="col-lg-7"><div class="panel-card h-100"><div class="panel-heading"><div><h2>Restock recommendations</h2><p>Calculated automatically from current quantity and each medicine's minimum stock level.</p></div><a href="{% url 'pharmacy_medicines' %}">Manage inventory</a></div>
+      {% for item in restock_suggestions %}<div class="staff-row"><div class="avatar-circle"><i class="bi bi-capsule"></i></div><div class="flex-grow-1"><b>{{ item.medicine.name }}</b><small>On hand: {{ item.medicine.quantity }} · Minimum: {{ item.medicine.minimum_stock }}</small></div><span class="badge text-bg-warning">Restock {{ item.suggested_quantity }}</span></div>{% empty %}<div class="text-secondary py-3">All active medicines meet their minimum stock levels.</div>{% endfor %}
+    </div></div>
+    <div class="col-lg-5"><div class="panel-card h-100"><div class="panel-heading"><div><h2>Expiry watch</h2><p>Batch alerts for safe stock rotation</p></div><span class="badge text-bg-warning">{{ near_expiry|length }} soon</span></div>
+      {% for med in near_expiry %}<div class="staff-row"><div class="avatar-circle"><i class="bi bi-calendar-event"></i></div><div><b>{{ med.name }}</b><small>Batch {{ med.batch_number|default:'—' }} · expires {{ med.expiry_date|date:'d M Y' }}</small></div></div>{% empty %}<p class="text-secondary">No active batches expire within 60 days.</p>{% endfor %}
+      {% if expired_medicines %}<hr><h3 class="h6 text-danger">Expired stock — do not sell</h3>{% for med in expired_medicines %}<div class="staff-row"><div class="avatar-circle"><i class="bi bi-calendar-x text-danger"></i></div><div><b>{{ med.name }}</b><small>Batch {{ med.batch_number|default:'—' }} · expired {{ med.expiry_date|date:'d M Y' }} · {{ med.quantity }} units</small></div><span class="badge text-bg-danger">Expired</span></div>{% endfor %}{% endif %}
+    </div></div>
+  </div>
+  <div class="panel-card mt-4"><div class="panel-heading"><div><h2>Recent counter sales</h2><p>Receipts are recorded automatically and sold quantities are deducted from stock.</p></div><a href="{% url 'pharmacy_sale' %}">Record a sale</a></div><div class="table-responsive"><table class="table align-middle"><thead><tr><th>Receipt</th><th>Customer</th><th>Total</th><th>Payment</th><th>Time</th></tr></thead><tbody>{% for sale in recent_sales %}<tr><td>{{ sale.receipt_number }}</td><td>{{ sale.patient_name|default:'Walk-in' }}</td><td>₹{{ sale.total|floatformat:2 }}</td><td>{{ sale.get_payment_method_display }}</td><td>{{ sale.created_at|date:'d M, H:i' }}</td></tr>{% empty %}<tr><td colspan="5" class="text-secondary text-center">No sales recorded yet.</td></tr>{% endfor %}</tbody></table></div></div>
+  <div class="small text-secondary mt-3">This dashboard calculates alerts from saved inventory each time it loads. It does not place purchase orders with suppliers automatically.</div>
+</div></section>
+{% endblock %}

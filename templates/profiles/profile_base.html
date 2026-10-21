@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% load static %}
+{% block extra_head %}<link rel="stylesheet" href="{% static 'profiles/profile.css' %}">{% endblock %}
+{% block content %}
+<section class="pr-page">
+  <div class="container">
+    <header class="pr-profile-head">
+      <div class="pr-avatar-wrap">
+        {% if prefs.avatar %}<img class="pr-avatar" src="{% url 'profile_avatar_image' %}" alt="Profile picture for {{ user.get_full_name|default:user.username }}">{% else %}<div class="pr-avatar pr-avatar-fallback" aria-hidden="true">{{ user.get_full_name|default:user.username|slice:":1"|upper }}</div>{% endif %}
+      </div>
+      <div class="pr-profile-identity">
+        <div class="pr-kicker">YOUR MEDMITRA ACCOUNT</div>
+        <h1>{{ user.get_full_name|default:user.username }}</h1>
+        <div class="pr-identity-meta"><span class="pr-role-pill"><i class="bi bi-person-badge"></i> {{ role_label }}</span><span><i class="bi bi-envelope"></i> {{ user.email|default:"No email added" }}</span></div>
+      </div>
+      <div class="pr-head-actions"><a class="btn btn-primary rounded-pill" href="{% url 'profile_edit' %}"><i class="bi bi-pencil-square me-1"></i> Edit profile</a></div>
+    </header>
+
+    <div class="row g-4 align-items-start">
+      <aside class="col-12 col-lg-3">
+        <nav class="pr-side-nav" aria-label="Profile settings">
+          <div class="pr-side-heading">Manage account</div>
+          <a href="{% url 'profile_overview' %}"><i class="bi bi-grid-1x2"></i> Profile overview</a>
+          <a href="{% url 'profile_edit' %}"><i class="bi bi-person-gear"></i> Personal information</a>
+          {% if role_label == "Customer" %}<a href="{% url 'profile_saved_items' %}"><i class="bi bi-heart"></i> Saved items</a><a href="{% url 'profile_addresses' %}"><i class="bi bi-geo-alt"></i> Address book</a><a href="{% url 'customer_dashboard' %}"><i class="bi bi-bag-check"></i> My orders</a><a href="{% url 'prescriptions' %}"><i class="bi bi-file-earmark-medical"></i> Prescriptions</a>{% endif %}
+          {% if role_label == "Retailer / Pharmacy Owner" %}<a href="{% url 'retailer_dashboard' %}"><i class="bi bi-shop"></i> Pharmacy dashboard</a><a href="{% url 'retailer_listings' %}"><i class="bi bi-box-seam"></i> Inventory</a><a href="{% url 'retailer_orders' %}"><i class="bi bi-receipt"></i> Pharmacy orders</a>{% endif %}
+          {% if role_label == "Pharmacy Staff" %}<a href="{% url 'staff_dashboard' %}"><i class="bi bi-box-seam"></i> Inventory workspace</a>{% endif %}
+          {% if role_label == "Administrator" %}<a href="{% url 'marketplace_admin_dashboard' %}"><i class="bi bi-shield-check"></i> Admin dashboard</a><a href="{% url 'admin:index' %}"><i class="bi bi-sliders"></i> Django administration</a>{% endif %}
+          <div class="pr-side-heading pr-side-heading-spaced">Preferences & privacy</div>
+          <a href="{% url 'profile_preferences' %}"><i class="bi bi-toggles"></i> Preferences</a>
+          <a href="{% url 'profile_security' %}"><i class="bi bi-shield-lock"></i> Security & privacy</a>
+          <a href="{% url 'contact' %}"><i class="bi bi-life-preserver"></i> Help & support</a>
+          <a href="{% url 'profile_export' %}"><i class="bi bi-download"></i> Download my data</a>
+          <form method="post" action="{% url 'logout' %}" class="pr-side-logout">{% csrf_token %}<button type="submit"><i class="bi bi-box-arrow-right"></i> Sign out</button></form>
+        </nav>
+      </aside>
+      <div class="col-12 col-lg-9">
+        {% block profile_content %}{% endblock %}
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}

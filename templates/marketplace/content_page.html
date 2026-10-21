@@ -1,0 +1,5 @@
+{% extends "base.html" %}
+{% block title %}{{ page_title }} — MedMitra{% endblock %}
+{% block content %}
+<section class="mk-page-hero"><div class="container"><div class="mk-section-kicker">MEDMITRA INFORMATION</div><h1>{{ page_title }}</h1><p>{{ page_intro }}</p></div></section><section class="mk-section"><div class="container"><article class="mk-info-block mk-prose">{{ page_content|linebreaks }}</article></div></section>
+{% endblock %}
